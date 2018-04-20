@@ -5,7 +5,7 @@ module.exports = (app)=>{
 
     const Card = new Schema({
         suit: String,
-        number: Number,
+        number: String,//K, Q, J, A
         rule: String,
         deck: { type: Schema.Types.ObjectId, ref: 'Deck' },
     });

@@ -6,9 +6,10 @@ module.exports = (app)=>{
     const Deck = new Schema({
         name: String,
         owner: { type: Schema.Types.ObjectId, ref: 'User' },
-        namespaces:{
+        namespace:{
             type:String
-        }
+        },
+        forked: { type: Schema.Types.ObjectId, ref: 'Deck' }
     });
     app.mongo.Deck = mongoose.model('Deck', Deck);
 }

@@ -80,3 +80,170 @@ describe('POST /decks', ()=>{
         });
     });
 })
+
+describe('GET /decks/:deck', function() {
+
+    it('should return a 200', function(done) {
+
+        request({
+            url: hostUrl + '/decks/circle',
+            json:true
+        }, function (err, response, body) {
+            if(err) return done(err);
+            if(!response){
+                return done(new Error("No response found"));
+            }
+            if(response.statusCode != 200){
+                return done(new Error("Invalid status code: " + response.statusCode));
+            }
+            if(!_.isObject(body)){
+                return done(new Error("Response was not an Object"));
+            }
+            if(!body.name){
+                return done(new Error("Deck has no name"));
+            }
+            return done();
+        });
+    });
+    it('should return a 404', function(done) {
+
+        request({
+            url: hostUrl + '/decks/imadeckthatdoesntexist',
+            json:true
+        }, function (err, response, body) {
+            if(err) return done(err);
+            if(!response){
+                return done(new Error("No response found"));
+            }
+            if(response.statusCode != 404){
+                return done(new Error("Invalid status code: " + response.statusCode));
+            }
+            if(!_.isObject(body)){
+                return done(new Error("Response was not an object"));
+            }
+            if(!body.error || !body.error.message){
+                return done(new Error("Missing error message"));
+            }
+            return done();
+        });
+    });
+
+
+
+});
+
+describe('GET /decks/:deck/cards', function() {
+
+    it('should return a 200', function (done) {
+
+        request({
+            url: hostUrl + '/decks/circle/cards',
+            json: true
+        }, function (err, response, body) {
+            if (err) return done(err);
+            if (!response) {
+                return done(new Error("No response found"));
+            }
+            if (response.statusCode != 200) {
+                return done(new Error("Invalid status code: " + response.statusCode));
+            }
+            if(!_.isArray(body)){
+                return done(new Error("Response was not an array"));
+            }
+            if(body.length < 1){
+                return done(new Error("Array is empty"));
+            }
+            return done();
+        });
+    });
+});
+
+describe('POST /decks/:deck/cards', function() {
+
+    it('should return a 400 with a bad `number`', function (done) {
+
+        request({
+            url: hostUrl + '/decks/circle/cards',
+            json: true,
+            method: 'POST',
+            body:{
+                number:'G',
+                suit:'H',
+                rule:'Put a lamp shade on your head'
+            }
+        }, function (err, response, body) {
+            if (err) return done(err);
+            if (!response) {
+                return done(new Error("No response found"));
+            }
+            if (response.statusCode != 400) {
+                return done(new Error("Invalid status code: " + response.statusCode));
+            }
+            if(!_.isObject(body)){
+                return done(new Error("Response was not an object"));
+            }
+            if(!body.error || !body.error.message){
+                return done(new Error("Missing error message"));
+            }
+            return done();
+        });
+    });
+
+    it('should return a 400 with a bad `suit`', function (done) {
+
+        request({
+            url: hostUrl + '/decks/circle/cards',
+            json: true,
+            method: 'POST',
+            body:{
+                number:'K',
+                suit:'P',
+                rule:'Put a lamp shade on your head'
+            }
+        }, function (err, response, body) {
+            if (err) return done(err);
+            if (!response) {
+                return done(new Error("No response found"));
+            }
+            if (response.statusCode != 400) {
+                return done(new Error("Invalid status code: " + response.statusCode));
+            }
+            if(!_.isObject(body)){
+                return done(new Error("Response was not an object"));
+            }
+            if(!body.error || !body.error.message){
+                return done(new Error("Missing error message"));
+            }
+            return done();
+        });
+    });
+
+    it('should return a 200', function (done) {
+
+        request({
+            url: hostUrl + '/decks/circle/cards',
+            json: true,
+            method: 'POST',
+            body:{
+                number:'K',
+                suit:'H',
+                rule:'Put a lamp shade on your head'
+            }
+        }, function (err, response, body) {
+            if (err) return done(err);
+            if (!response) {
+                return done(new Error("No response found"));
+            }
+            if (response.statusCode != 200) {
+                return done(new Error("Invalid status code: " + response.statusCode));
+            }
+            if(!_.isObject(body)){
+                return done(new Error("Response was not an object"));
+            }
+            if(!body.suit || !body.number || !body.rule){
+                return done(new Error("Missing fields"));
+            }
+            return done();
+        });
+    });
+});
