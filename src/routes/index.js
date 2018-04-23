@@ -8,6 +8,9 @@ module.exports = (app)=>{
     app.get('/', (req, res) => {
         res.send('Hello Traveler!')
     })
+    app.get('/heartbeat', (req, res) => {
+        res.send('Hello Traveler!')
+    })
     app.use((req, res, next)=>{
         res.set('Access-Control-Allow-Headers', 'Content-Type');
         res.set('Access-Control-Allow-Credentials', 'true');
