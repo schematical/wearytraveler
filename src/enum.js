@@ -19,6 +19,7 @@ module.exports = (app)=>{
         D:'D',
         H:'H',
         C:'C',
-        S:'S'
+        S:'S',
+        A:'A'
     }
 }

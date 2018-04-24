@@ -10,6 +10,7 @@ module.exports = (app)=>{
     opts.secretOrKey = config.get('auth.secret');
   /*  opts.issuer = config.get('auth.issuer');
     opts.audience = config.get('auth.audience');*/
+    app.use(passport.initialize());
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
         app.mongo.User.findOne({id: jwt_payload.sub}, function(err, user) {
             if (err) {
@@ -38,7 +39,10 @@ module.exports = (app)=>{
             }
 
             passport.authenticate('local')(req, res, function () {
-                return res.json(req.user.toObject())
+                return res.json({
+                    jwt: req.user.getJWT(),
+                    user:req.user.toObject()
+                })
             });
         });
     });
@@ -47,10 +51,20 @@ module.exports = (app)=>{
         res.render('login', { user : req.user });
     })*/
 
-    app.post('/login', passport.authenticate('local', {session:false}), function(req, res) {
-        return res.json({
-            jwt: req.user.getJWT()
-        })
+    app.post('/login', function(req, res, next) {
+        return passport.authenticate('local', {session:false}, function(err, user, info) {
+            if (err) { return next(err); }
+            if (!user) {
+                return res.json(info);
+            }
+            return req.logIn(user, function(err) {
+                if (err) { return next(err); }
+                return res.json({
+                    jwt: req.user.getJWT(),
+                    user:req.user.toObject()
+                })
+            });
+        })(req, res, next);
     });
 
     app.get('/logout', function(req, res) {

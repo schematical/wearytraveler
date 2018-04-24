@@ -5,6 +5,7 @@ module.exports = (app)=>{
     app.disable('etag');
     app.enable('trust proxy');
     app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: false}));
     app.get('/', (req, res) => {
         res.send('Hello Traveler!')
     })
@@ -12,7 +13,7 @@ module.exports = (app)=>{
         res.send('Hello Traveler!')
     })
     app.use((req, res, next)=>{
-        res.set('Access-Control-Allow-Headers', 'Content-Type');
+        res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.set('Access-Control-Allow-Credentials', 'true');
         res.set('Access-Control-Allow-Origin',  req.headers.origin);
         return next();
