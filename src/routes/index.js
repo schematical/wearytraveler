@@ -40,7 +40,7 @@ module.exports = (app)=>{
     })
     app.post('/decks',
         passport.authenticate('jwt', { session: false }),
-        (req, res) => {
+        (req, res, next) => {
             if(!req.body.name){
                 return res.status(400).json({
                     error:{
@@ -48,13 +48,24 @@ module.exports = (app)=>{
                     }
                 })
             }
-            let deck = new app.mongo.Deck({
+            req.deck = new app.mongo.Deck({
                 name: req.body.name,
-                namespace: req.body.namespace
+                namespace: req.body.namespace,
+                owner: req.user._id
             })
-            return deck.save((err, deck)=>{
-                return res.json(deck.toObject());
+            return new Promise((resolve, reject)=>{
+                return req.deck.save((err, deck)=>{
+                    if(err) return reject(err);
+                    return resolve();
+                })
             })
+            .then((deck)=>{
+                return req.deck.setupCards();
+            })
+            .then(()=>{
+                return res.json(req.deck.toObject());
+            })
+            .catch(next);
         }
     )
     app.get('/decks/:deck', (req, res) => {
