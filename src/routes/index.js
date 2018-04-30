@@ -7,7 +7,7 @@ module.exports = (app)=>{
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
     app.get('/', (req, res) => {
-        res.send('Hello Traveler!')
+        return res.redirect('http://shiporgetoffthepot.com');
     })
     app.get('/heartbeat', (req, res) => {
         res.send('Hello Traveler!')
@@ -118,6 +118,7 @@ module.exports = (app)=>{
                 missingFields.push('rule')
             }
 
+
             if(missingFields.length > 0){
                 return res.status(400).json({
                     error:{
@@ -157,6 +158,7 @@ module.exports = (app)=>{
                     card.suit =  req.body.suit;
                     card.number = req.body.number;
                     card.rule = req.body.rule;
+                    card.title = req.body.title;
                     card.deck = req.deck._id;
 
                     return card.save((err, card) => {
